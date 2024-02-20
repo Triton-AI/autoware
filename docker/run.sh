@@ -126,7 +126,7 @@ set_x_display() {
     MOUNT_X=""
     if [ "$option_headless" = "false" ]; then
         MOUNT_X="-e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix"
-        xhost + > /dev/null
+        xhost + >/dev/null
     fi
 }
 
