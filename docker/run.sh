@@ -36,7 +36,6 @@ print_help() {
     echo ""
 }
 
-
 # Parse arguments
 parse_arguments() {
     while [ "$1" != "" ]; do
@@ -126,20 +125,20 @@ set_x_display() {
     MOUNT_X=""
     if [ "$option_headless" = "false" ]; then
         MOUNT_X="-e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix"
-        xhost + > /dev/null
+        xhost + >/dev/null
     fi
 }
 
 loading_animation() {
     chars="/-\|"
     while true; do
-        for (( i=0; i<${#chars}; i++ )); do
+        for ((i = 0; i < ${#chars}; i++)); do
             sleep 0.1
-            echo -en "${chars:$i:1}" "\r"
+            echo -en "${chars:i:1}" "\r"
         done
     done
 }
-    
+
 cleanup() {
     kill $LOADING_PID
     exit
@@ -159,7 +158,7 @@ main() {
     echo "LAUNCH CMD: ${LAUNCH_CMD}"
     echo "WORKSPACE(to mount): ${WORKSPACE_PATH}"
     echo "-----------------------------------------------------------------"
-    
+
     # Start loading animation
     loading_animation &
     LOADING_PID=$!
