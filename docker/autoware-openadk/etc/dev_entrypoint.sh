@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # shellcheck disable=SC1090,SC1091
 
 # Get the user ID and group ID of the local user
@@ -23,6 +23,7 @@ else
     # Source ROS2
     # hadolint ignore=SC1090
     source "/opt/ros/$ROS_DISTRO/setup.bash"
+    source /autoware/install/setup.bash
 
     # Execute the command as the user
     exec /usr/sbin/gosu "$USER_NAME" "$@"
