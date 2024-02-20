@@ -99,9 +99,9 @@ RUN --mount=type=ssh \
 WORKDIR /workspace
 
 # Create entrypoint
-COPY docker/autoware-openadk/etc/dev_entrypoint.sh /dev_entrypoint.sh
-RUN chmod +x /dev_entrypoint.sh
-ENTRYPOINT ["/dev_entrypoint.sh"]
+COPY docker/autoware-openadk/etc/ros_entrypoint.sh /ros_entrypoint.sh
+RUN chmod +x /ros_entrypoint.sh
+ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ["/bin/bash"]
 
 FROM base as runtime
