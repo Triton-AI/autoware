@@ -19,9 +19,9 @@ on:
       artifacts-destination:
         type: choice
         description: Destination for the artifacts
-        options: 
-        - registry
-        - tarball
+        options:
+          - registry
+          - tarball
         default: tarball
 
 jobs:
