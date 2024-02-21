@@ -100,8 +100,8 @@ runs:
         set: |
           ${{ inputs.build-args }}
 
-    - name: Build and Publish Release to GitHub Container Registry
-      if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
+    - name: Build and Publish to GitHub Container Registry
+      if: ${{ (github.event_name == 'push' && github.ref_type == 'tag' ) || (github.event_name == 'workflow_dispatch' && github.event.inputs.artifact-destination == 'registry') }}
       uses: docker/bake-action@v3
       with:
         push: true
@@ -115,7 +115,7 @@ runs:
           ${{ inputs.build-args }}
 
     - name: Build and Save Artifacts
-      if: ${{ github.event_name == 'workflow_dispatch' }}
+      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.artifact-destination == 'tarball' }}
       uses: docker/bake-action@v3
       with:
         push: false
@@ -132,7 +132,7 @@ runs:
           runtime.output=type=docker,dest=/tmp/runtime.tar
 
     - name: Upload Artifact - prebuilt
-      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.save-artifacts == 'true' }}
+      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.artifact-destination == 'tarball' }}
       id: artifact-upload-step-prebuilt
       uses: actions/upload-artifact@v4
       with:
@@ -144,7 +144,7 @@ runs:
         if-no-files-found: error
 
     - name: Upload Artifact - devel
-      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.save-artifacts == 'true' }}
+      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.artifact-destination == 'tarball' }}
       id: artifact-upload-step-devel
       uses: actions/upload-artifact@v4
       with:
@@ -156,7 +156,7 @@ runs:
         if-no-files-found: error
 
     - name: Upload Artifact - runtime
-      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.save-artifacts == 'true' }}
+      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.artifact-destination == 'tarball' }}
       id: artifact-upload-step-runtime
       uses: actions/upload-artifact@v4
       with:
