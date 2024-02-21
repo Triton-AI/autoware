@@ -36,11 +36,11 @@ jobs:
             base_image_env: base_image
             lib_dir: x86_64
             setup-args: --no-nvidia
-            additional-tag-suffix: -nocuda
+            additional-tag-suffix: ""
           - name: cuda
             base_image_env: base_image
             lib_dir: x86_64
-            additional-tag-suffix: ""
+            additional-tag-suffix: -cuda
     steps:
       - name: Check out repository
         uses: actions/checkout@v4

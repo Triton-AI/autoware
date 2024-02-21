@@ -13,6 +13,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install --no-ins
   wget \
   cmake \
   curl \
+  gosu \
   ccache \
   gnupg \
   vim \
@@ -45,9 +46,10 @@ FROM base as prebuilt
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG ROS_DISTRO
 ARG SETUP_ARGS
-ENV CMAKE_GENERATOR=Ninja
-ENV CCACHE_DIR=/ccache
 ARG ROS_DISTRO
+ENV CCACHE_DIR=/ccache
+ENV CC="/usr/lib/ccache/gcc"
+ENV CXX="/usr/lib/ccache/g++"
 
 # Set up development environment
 RUN --mount=type=ssh \
@@ -73,8 +75,6 @@ RUN --mount=type=ssh \
     " --no-warn-unused-cli" \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-    -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
   && find /autoware/install -type d -exec chmod 777 {} \; \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* "$HOME"/.cache \
   && rm -rf /autoware/build /autoware/src
@@ -88,11 +88,6 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN --mount=type=ssh \
   ./setup-dev-env.sh -y --module dev-tools --download-artifacts openadk \
   && pip uninstall -y ansible ansible-core \
-  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* "$HOME"/.cache
-
-# Instal gosu for switching to local user in entrypoint
-RUN --mount=type=ssh \
-  apt-get update && apt-get install --no-install-recommends -y gosu \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* "$HOME"/.cache
 
 # Change working directory to workspace

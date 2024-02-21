@@ -3,6 +3,12 @@
 
 set -e
 
+# Define terminal colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
 SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
 WORKSPACE_ROOT="$SCRIPT_DIR/../"
 source "$WORKSPACE_ROOT/amd64.env"
@@ -23,18 +29,17 @@ DEFAULT_LAUNCH_CMD="ros2 launch autoware_launch autoware.launch.xml map_path:=/a
 # Function to print help message
 print_help() {
     echo -e "\n------------------------------------------------------------"
-    echo "Note: The --map-path option is mandatory for default launch command. Please provide exact path to the map files."
-    echo "      Default launch command: ${DEFAULT_LAUNCH_CMD}"
-    echo "------------------------------------------------------------"
-    echo "Usage: run.sh [OPTIONS] [LAUNCH_CMD](optional)"
-    echo "Options:"
-    echo "  --help          Display this help message"
-    echo "  -h              Display this help message"
-    echo "  --map-path      Specify the path to the map files (mandatory if no custom launch command is provided)"
-    echo "  --no-nvidia     Disable NVIDIA GPU support"
-    echo "  --devel         Use the latest development version of Autoware"
-    echo "  --headless      Run Autoware in headless mode (default: false)"
-    echo "  --workspace     Specify the workspace path to mount into container(default: current directory)"
+    echo -e "${RED}Note:${NC} The --map-path option is mandatory if not custom launch command given. Please provide exact path to the map files."
+    echo -e "      Default launch command: ${GREEN}${DEFAULT_LAUNCH_CMD}${NC}"
+    echo -e "------------------------------------------------------------"
+    echo -e "${RED}Usage:${NC} run.sh [OPTIONS] [LAUNCH_CMD](optional)"
+    echo -e "Options:"
+    echo -e "  ${GREEN}--help/-h${NC}       Display this help message"
+    echo -e "  ${GREEN}--map-path${NC}      Specify the path to the map files (mandatory if no custom launch command is provided)"
+    echo -e "  ${GREEN}--no-nvidia${NC}     Disable NVIDIA GPU support"
+    echo -e "  ${GREEN}--devel${NC}         Use the latest development version of Autoware"
+    echo -e "  ${GREEN}--headless${NC}      Run Autoware in headless mode (default: false)"
+    echo -e "  ${GREEN}--workspace${NC}     Specify the workspace path to mount into container"
     echo ""
 }
 
@@ -106,19 +111,19 @@ set_variables() {
 
     # Set image based on option
     if [ "$option_devel" == "true" ]; then
-        IMAGE="ghcr.io/autowarefoundation/autoware-openadk:devel-humble-latest-cuda"
+        IMAGE="ghcr.io/autowarefoundation/autoware-openadk:latest-devel"
     else
-        IMAGE="ghcr.io/autowarefoundation/autoware-openadk:runtime-humble-latest-cuda"
+        IMAGE="ghcr.io/autowarefoundation/autoware-openadk:latest-runtime"
     fi
 }
 
 # Set GPU flag based on option
 set_gpu_flag() {
     if [ "$option_no_nvidia" = "true" ]; then
-        IMAGE=${IMAGE}-nocuda
         GPU_FLAG=""
     else
         GPU_FLAG="--gpus all"
+        IMAGE=${IMAGE}-cuda
     fi
 }
 
@@ -139,18 +144,18 @@ main() {
     set_gpu_flag
     set_x_display
 
-    echo -e "\n-----------------------LAUNCHING CONTAINER-----------------------"
-    echo "IMAGE: ${IMAGE}"
-    echo "MAP PATH: ${MAP_PATH}"
-    echo "LAUNCH CMD: ${LAUNCH_CMD}"
-    echo "WORKSPACE(to mount): ${WORKSPACE_PATH}"
-    echo "-----------------------------------------------------------------"
+    echo -e "${GREEN}\n-----------------------LAUNCHING CONTAINER-----------------------"
+    echo -e "${GREEN}IMAGE:${NC} ${IMAGE}"
+    echo -e "${GREEN}MAP PATH(mounted):${NC} ${MAP_PATH}:/autoware_map"
+    echo -e "${GREEN}WORKSPACE(mounted):${NC} ${WORKSPACE_PATH}:/workspace"
+    echo -e "${GREEN}LAUNCH CMD:${NC} ${LAUNCH_CMD}"
+    echo -e "${GREEN}-----------------------------------------------------------------${NC}"
 
     # Launch the container
     set -x
-    docker run -it --rm --net=host ${GPU_FLAG} ${USER_ID} ${MOUNT_X} \
+    docker run -it --rm --net=host --cpu-period="100000" --cpu-quota="2000000" -e ROS_DOMAIN_ID=28 ${GPU_FLAG} ${USER_ID} ${MOUNT_X} \
         ${WORKSPACE} ${MAP} ${IMAGE} \
-        ${LAUNCH_CMD}
+        /usr/bin/bash -c "${LAUNCH_CMD}"
 }
 
 # Execute the main script
