@@ -153,7 +153,8 @@ main() {
 
     # Launch the container
     set -x
-    docker run -it --rm --net=host --cpu-period="100000" --cpu-quota="2000000" -e ROS_DOMAIN_ID=28 ${GPU_FLAG} ${USER_ID} ${MOUNT_X} \
+    docker run -it --rm --net=host ${GPU_FLAG} ${USER_ID} ${MOUNT_X} \
+        -e XAUTHORITY=${XAUTHORITY} -e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR -e NVIDIA_DRIVER_CAPABILITIES=all -v /etc/localtime:/etc/localtime:ro \
         ${WORKSPACE} ${MAP} ${IMAGE} \
         /usr/bin/bash -c "${LAUNCH_CMD}"
 }
