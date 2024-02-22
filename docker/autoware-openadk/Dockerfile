@@ -19,7 +19,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install --no-ins
   vim \
   unzip \
   lsb-release \
-  ninja-build \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* "$HOME"/.cache
 
 # Add GitHub to known hosts for private repositories
