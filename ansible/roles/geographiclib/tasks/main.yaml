@@ -10,4 +10,3 @@
   ansible.builtin.command:
     cmd: geographiclib-get-geoids egm2008-1
     creates: /usr/share/GeographicLib/geoids/egm2008-1.pgm
-
