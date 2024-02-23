@@ -11,6 +11,9 @@ inputs:
   tag-suffix:
     description: ""
     required: false
+  tag-prefix:
+    description: ""
+    required: false
   allow-push:
     description: ""
     default: "true"
@@ -38,6 +41,7 @@ runs:
 
         tags+=("{{date 'YYYYMMDD'}}")
         tags+=("latest")
+        tags+=("latest-{{ inputs.tag-prefix }}")
 
         # Output multiline strings: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
         EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
