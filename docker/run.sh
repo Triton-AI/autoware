@@ -156,7 +156,7 @@ main() {
     docker run -it --rm --net=host ${GPU_FLAG} ${USER_ID} ${MOUNT_X} \
         -e XAUTHORITY=${XAUTHORITY} -e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR -e NVIDIA_DRIVER_CAPABILITIES=all -v /etc/localtime:/etc/localtime:ro \
         ${WORKSPACE} ${MAP} ${IMAGE} \
-        /usr/bin/bash -c "${LAUNCH_CMD}"
+        ${LAUNCH_CMD}
 }
 
 # Execute the main script
